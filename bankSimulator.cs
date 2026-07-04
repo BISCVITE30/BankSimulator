@@ -3,6 +3,8 @@ namespace Program
 {
     class BankSimulator
     {
+
+        static double user = 100;
         static void ClearTerminal()
         {
             Console.Clear();
@@ -10,53 +12,46 @@ namespace Program
             Console.WriteLine();
         }
 
-        static void CheckBalance(double user)
+        static void CheckBalance()
         {
             ClearTerminal();
-            Console.WriteLine($"Your balance is {user}$");
-            Menu(user);
+            Console.WriteLine($"Your balance is ${user}");
         }
 
-        static void Deposit(double user)
+        static void Deposit()
         {
             double amountDeposit;
             ClearTerminal();
             Console.Write("Enter deposit amount: $");
             amountDeposit = Convert.ToDouble(Console.ReadLine());
             user += amountDeposit;
-            Console.WriteLine($"Successfully deposited {amountDeposit}$. Your new balance is {user}$");
-            Menu(user);
+            Console.WriteLine($"Successfully deposited ${amountDeposit}. Your new balance is ${user}");
         }
 
-        static void Withdraw(double user)
+        static void Withdraw()
         {
             double amountWithdraw;
             Console.Write("Enter your withdrawal: $");
-                    amountWithdraw = Convert.ToDouble(Console.ReadLine());
-                    if (amountWithdraw <= user)
-                    {
-                        ClearTerminal();
-                        user -= amountWithdraw;
-
-                        Console.WriteLine($"Successfully withdrew {amountWithdraw}$. Your current balance is {user}$");
-                        Menu(user);
-                    }
-                    else
-                    {
-
-                        Console.WriteLine("Insufficient funds.");
-                        Console.Write("You want return back? (Yes/No) ");
-                        string turnBack = Console.ReadLine();
-                        if (turnBack == "Yes")
-                        {
-                            ClearTerminal();
-                            Menu(user);
-                        }
-                    }
+            amountWithdraw = Convert.ToDouble(Console.ReadLine());
+            if (amountWithdraw <= user)
+            {
+                ClearTerminal();
+                user -= amountWithdraw;
+                Console.WriteLine($"Successfully withdrew ${amountWithdraw}. Your current balance is ${user}");
+            }
+            else
+            {
+                Console.WriteLine("Insufficient funds.");
+                Console.Write("You want return back? (Yes/No) ");
+                string turnBack = Console.ReadLine();
+                if (turnBack == "Yes")
+                {
+                    ClearTerminal();
+                }
+            }
         }
-        static void Menu(double user)
+        static bool Menu()
         {
-           
             int userChoise;
 
             string[] mainPage =
@@ -76,18 +71,20 @@ namespace Program
             switch (userChoise)
             {
                 case 1:
-                    CheckBalance(user);
+                    CheckBalance();
                     break;
                 case 2:
-                    Deposit(user);
+                    Deposit();
                     break;
                 case 3:
-                    Withdraw(user);
+                    Withdraw();
                     break;
                 case 4:
+                    ClearTerminal();
                     Console.WriteLine("Thanks you for using our system. Have a nice day!");
-                    break;
+                    return false;
             }
+            return true;
         }
         static bool IdentificationAge()
         {
@@ -114,15 +111,17 @@ namespace Program
         {
 
             Console.WriteLine("Welcome to our system.");
+            bool isActive = true;
             bool isIdentified = IdentificationAge();
             if (!isIdentified)
             {
                 return;
             }
 
-            double user = 100;
-
-            Menu(user);
+            while (isActive)
+            {
+                isActive = Menu();    
+            }
         } 
     }
 }
