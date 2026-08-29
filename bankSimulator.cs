@@ -1,4 +1,5 @@
 using System;
+using System.Security.Cryptography.X509Certificates;
 namespace Program
 {
 
@@ -109,7 +110,7 @@ namespace Program
         // }
         static bool Menu(BankAccount account)
         {
-
+            
             string[] mainPage =
             [
                 "1. Check the balance",
@@ -137,9 +138,7 @@ namespace Program
                     account.Withdraw();
                     break;
                 case "4":
-                    ClearTerminal();
-                    Console.WriteLine("Thanks you for using our system. Have a nice day!");
-                    return false;
+                        return false;
             }
             }
             return true;
@@ -175,19 +174,42 @@ namespace Program
         
         static void Main(string[] args)
         {
-
-            BankAccount myAccount = new BankAccount("Panfil", 100);
+            bool isSystemOn = true;
+            BankAccount[] accounts = { new BankAccount("Panfil", 100), new BankAccount("Sarah", 300) };
             Console.WriteLine("Welcome to our system.");
-            bool isActive = true;
             bool isIdentified = IdentificationAge();
             if (!isIdentified)
             {
                 return;
             }
 
-            while (isActive)
+            while (isSystemOn)
             {
-                isActive = Menu(myAccount);    
+
+            ClearTerminal();
+
+                Console.WriteLine("Select an account:");
+                int index = 0;
+                foreach (BankAccount account in accounts)
+                {
+                    index++;
+                    Console.WriteLine($"{index}. {account.OwnerName}");
+                }
+                Console.WriteLine($"{index + 1}. Exit System");
+                index = 0;
+                int accountSelected = Convert.ToInt32(Console.ReadLine());
+            if(accountSelected == (accounts.Length + 1))
+                {
+                    ClearTerminal();
+                    Console.WriteLine("Thank you for using our system.");
+                    break;
+                }
+            bool isSessionActive = true;
+            while (isSessionActive)
+                {
+                    ClearTerminal();
+                isSessionActive = Menu(accounts[accountSelected - 1]);    
+            }
             }
         } 
     }
