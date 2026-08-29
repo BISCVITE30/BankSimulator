@@ -1,44 +1,48 @@
 using System;
 namespace Program
 {
-    class BankSimulator
+
+    class BankAccount
     {
+        public string OwnerName{ get; set; }
+        public double Balance{ get; private set; }
+        readonly int AccountNumber;
+        readonly DateTime CreatedAt;
+        static double InterestRate;
 
-        static double user = 100;
-        static void ClearTerminal()
+        public BankAccount(string OwnerName, double Balance)
         {
-            Console.Clear();
-            Console.WriteLine();
-            Console.WriteLine();
+            this.OwnerName = OwnerName;
+            this.Balance = Balance;
+            this.CreatedAt = DateTime.Now;
+        }
+        public void CheckBalance()
+        {
+            BankSimulator.ClearTerminal();
+            Console.WriteLine($"Your balance is ${this.Balance}");
         }
 
-        static void CheckBalance()
-        {
-            ClearTerminal();
-            Console.WriteLine($"Your balance is ${user}");
-        }
-
-        static void Deposit()
+        public void Deposit()
         {
             double amountDeposit;
-            ClearTerminal();
+            BankSimulator.ClearTerminal();
             Console.Write("Enter deposit amount: $");
             amountDeposit = Convert.ToDouble(Console.ReadLine());
-            user += amountDeposit;
-            Console.WriteLine($"Successfully deposited ${amountDeposit}. Your new balance is ${user}");
+            this.Balance += amountDeposit;
+            Console.WriteLine($"Successfully deposited ${amountDeposit}. Your new balance is ${this.Balance}");
         }
 
-        static void Withdraw()
+        public void Withdraw()
         {
-            ClearTerminal();
+            BankSimulator.ClearTerminal();
             double amountWithdraw;
             Console.Write("Enter your withdrawal: $");
             amountWithdraw = Convert.ToDouble(Console.ReadLine());
-            if (amountWithdraw <= user)
+            if (amountWithdraw <= this.Balance)
             {
-                ClearTerminal();
-                user -= amountWithdraw;
-                Console.WriteLine($"Successfully withdrew ${amountWithdraw}. Your current balance is ${user}");
+                BankSimulator.ClearTerminal();
+                this.Balance -= amountWithdraw;
+                Console.WriteLine($"Successfully withdrew ${amountWithdraw}. Your current balance is ${this.Balance}");
             }
             else
             {
@@ -47,12 +51,65 @@ namespace Program
                 string? turnBack = Console.ReadLine();
                 if (turnBack == "Yes")
                 {
-                    ClearTerminal();
+                    BankSimulator.ClearTerminal();
                 }
             }
         }
-        static bool Menu()
+    }
+
+    class BankSimulator
+    {
+
+        
+        public static void ClearTerminal()
         {
+            Console.Clear();
+            Console.WriteLine();
+            Console.WriteLine();
+        }
+
+        // static void CheckBalance()
+        // {
+        //     ClearTerminal();
+        //     Console.WriteLine($"Your balance is ${user}");
+        // }
+
+        // static void Deposit()
+        // {
+        //     double amountDeposit;
+        //     ClearTerminal();
+        //     Console.Write("Enter deposit amount: $");
+        //     amountDeposit = Convert.ToDouble(Console.ReadLine());
+        //     user += amountDeposit;
+        //     Console.WriteLine($"Successfully deposited ${amountDeposit}. Your new balance is ${user}");
+        // }
+
+        // static void Withdraw()
+        // {
+        //     ClearTerminal();
+        //     double amountWithdraw;
+        //     Console.Write("Enter your withdrawal: $");
+        //     amountWithdraw = Convert.ToDouble(Console.ReadLine());
+        //     if (amountWithdraw <= user)
+        //     {
+        //         ClearTerminal();
+        //         user -= amountWithdraw;
+        //         Console.WriteLine($"Successfully withdrew ${amountWithdraw}. Your current balance is ${user}");
+        //     }
+        //     else
+        //     {
+        //         Console.WriteLine("Insufficient funds.");
+        //         Console.Write("You want return back? (Yes/No) ");
+        //         string? turnBack = Console.ReadLine();
+        //         if (turnBack == "Yes")
+        //         {
+        //             ClearTerminal();
+        //         }
+        //     }
+        // }
+        static bool Menu(BankAccount account)
+        {
+
             string[] mainPage =
             [
                 "1. Check the balance",
@@ -71,13 +128,13 @@ namespace Program
                 switch (userChoise)
             {
                 case "1":
-                    CheckBalance();
+                    account.CheckBalance();
                     break;
                 case "2":
-                    Deposit();
+                    account.Deposit();
                     break;
                 case "3":
-                    Withdraw();
+                    account.Withdraw();
                     break;
                 case "4":
                     ClearTerminal();
@@ -119,6 +176,7 @@ namespace Program
         static void Main(string[] args)
         {
 
+            BankAccount myAccount = new BankAccount("Panfil", 100);
             Console.WriteLine("Welcome to our system.");
             bool isActive = true;
             bool isIdentified = IdentificationAge();
@@ -129,7 +187,7 @@ namespace Program
 
             while (isActive)
             {
-                isActive = Menu();    
+                isActive = Menu(myAccount);    
             }
         } 
     }
