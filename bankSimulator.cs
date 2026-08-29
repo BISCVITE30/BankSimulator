@@ -7,9 +7,9 @@ namespace Program
     {
         public string OwnerName{ get; set; }
         public double Balance{ get; private set; }
-        readonly int AccountNumber;
-        readonly DateTime CreatedAt;
-        static double InterestRate;
+        // readonly int AccountNumber;
+        // readonly DateTime CreatedAt;
+        // static double InterestRate;
 
         public BankAccount(string OwnerName, double Balance)
         {
@@ -69,45 +69,6 @@ namespace Program
             Console.WriteLine();
         }
 
-        // static void CheckBalance()
-        // {
-        //     ClearTerminal();
-        //     Console.WriteLine($"Your balance is ${user}");
-        // }
-
-        // static void Deposit()
-        // {
-        //     double amountDeposit;
-        //     ClearTerminal();
-        //     Console.Write("Enter deposit amount: $");
-        //     amountDeposit = Convert.ToDouble(Console.ReadLine());
-        //     user += amountDeposit;
-        //     Console.WriteLine($"Successfully deposited ${amountDeposit}. Your new balance is ${user}");
-        // }
-
-        // static void Withdraw()
-        // {
-        //     ClearTerminal();
-        //     double amountWithdraw;
-        //     Console.Write("Enter your withdrawal: $");
-        //     amountWithdraw = Convert.ToDouble(Console.ReadLine());
-        //     if (amountWithdraw <= user)
-        //     {
-        //         ClearTerminal();
-        //         user -= amountWithdraw;
-        //         Console.WriteLine($"Successfully withdrew ${amountWithdraw}. Your current balance is ${user}");
-        //     }
-        //     else
-        //     {
-        //         Console.WriteLine("Insufficient funds.");
-        //         Console.Write("You want return back? (Yes/No) ");
-        //         string? turnBack = Console.ReadLine();
-        //         if (turnBack == "Yes")
-        //         {
-        //             ClearTerminal();
-        //         }
-        //     }
-        // }
         static bool Menu(BankAccount account)
         {
             
