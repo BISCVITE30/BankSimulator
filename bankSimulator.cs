@@ -8,7 +8,7 @@ namespace Program
         public string OwnerName{ get; set; }
         public double Balance{ get; private set; }
         // readonly int AccountNumber;
-        // readonly DateTime CreatedAt;
+        readonly DateTime CreatedAt;
         // static double InterestRate;
 
         public BankAccount(string OwnerName, double Balance)
@@ -21,6 +21,8 @@ namespace Program
         {
             BankSimulator.ClearTerminal();
             Console.WriteLine($"Your balance is ${this.Balance}");
+
+            BankSimulator.PressF();
         }
 
         public void Deposit()
@@ -31,6 +33,8 @@ namespace Program
             amountDeposit = Convert.ToDouble(Console.ReadLine());
             this.Balance += amountDeposit;
             Console.WriteLine($"Successfully deposited ${amountDeposit}. Your new balance is ${this.Balance}");
+
+            BankSimulator.PressF();
         }
 
         public void Withdraw()
@@ -44,6 +48,8 @@ namespace Program
                 BankSimulator.ClearTerminal();
                 this.Balance -= amountWithdraw;
                 Console.WriteLine($"Successfully withdrew ${amountWithdraw}. Your current balance is ${this.Balance}");
+
+                BankSimulator.PressF();
             }
             else
             {
@@ -56,11 +62,47 @@ namespace Program
                 }
             }
         }
+
+        public void Transfer(BankAccount targetAccount)
+        {
+            BankSimulator.ClearTerminal();
+            Console.Write("Enter tranfer amount: $");
+
+            if(double.TryParse(Console.ReadLine(), out double amountTransfer) && amountTransfer > 0)
+            {
+                
+                if(amountTransfer <= this.Balance)
+                {
+                    this.Balance -= amountTransfer;
+                    targetAccount.Balance += amountTransfer;
+                    BankSimulator.ClearTerminal();
+                    Console.WriteLine($"Successfully transfered {amountTransfer}$ to {targetAccount.OwnerName}");
+                    Console.WriteLine($"Your new Balance is: {this.Balance}$");
+
+                }
+                else
+                {
+                    Console.WriteLine("Insufficient funds.");
+                };
+
+            } 
+            else
+            {
+                Console.WriteLine("Invalid amount");    
+            }
+
+            BankSimulator.PressF();
+        }
     }
 
     class BankSimulator
     {
 
+        public static void PressF()
+        {
+            Console.WriteLine("\nPress Enter to continue");
+            Console.ReadLine();
+        }
         
         public static void ClearTerminal()
         {
@@ -69,7 +111,7 @@ namespace Program
             Console.WriteLine();
         }
 
-        static bool Menu(BankAccount account)
+        static bool Menu(BankAccount account, BankAccount[] allAccounts)
         {
             
             string[] mainPage =
@@ -77,7 +119,8 @@ namespace Program
                 "1. Check the balance",
                 "2. Make a deposit",
                 "3. Withdraw",
-                "4. Exit"
+                "4. Exit",
+                "5. Transfer Money"
             ];
             int convertedNumber;
             Console.WriteLine("Welcome to our system!");
@@ -100,6 +143,26 @@ namespace Program
                     break;
                 case "4":
                         return false;
+                case "5":
+                Console.WriteLine("Choose an account to transfer to: ");
+                for (int i = 0; i < allAccounts.Length; i++)
+                        {
+                            if(allAccounts[i] != account)
+                            {
+                                Console.WriteLine($"{i + 1} {allAccounts[i].OwnerName}");
+                            }
+                        }
+
+                Console.Write("Choise: ");
+
+                if(int.TryParse(Console.ReadLine(), out int targetIndex) && targetIndex > 0 && targetIndex <= allAccounts.Length && allAccounts[targetIndex - 1] != account)
+                        {
+                            account.Transfer(allAccounts[targetIndex - 1]);
+                        } else
+                        {
+                            Console.WriteLine("Invalid selection");
+                        }
+                        break;
             }
             }
             return true;
@@ -158,19 +221,27 @@ namespace Program
                 }
                 Console.WriteLine($"{index + 1}. Exit System");
                 index = 0;
-                int accountSelected = Convert.ToInt32(Console.ReadLine());
-            if(accountSelected == (accounts.Length + 1))
+                if(int.TryParse(Console.ReadLine(), out int accountSelected) && accountSelected > 0 && accountSelected <= (accounts.Length + 1))
                 {
-                    ClearTerminal();
-                    Console.WriteLine("Thank you for using our system.");
-                    break;
+                    
+                    if(accountSelected == (accounts.Length + 1))
+                    {
+                        ClearTerminal();
+                        Console.WriteLine("Thank you for using our system.");
+                        break;
+                    }
+                    bool isSessionActive = true;
+                    while (isSessionActive)
+                    {
+                        ClearTerminal();
+                    isSessionActive = Menu(accounts[accountSelected - 1], accounts);    
+                    }
+                } 
+                else
+                {
+                    Console.WriteLine("Invalid choice. Please pick a valid option number");
+                    PressF();
                 }
-            bool isSessionActive = true;
-            while (isSessionActive)
-                {
-                    ClearTerminal();
-                isSessionActive = Menu(accounts[accountSelected - 1]);    
-            }
             }
         } 
     }
