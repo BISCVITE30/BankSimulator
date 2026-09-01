@@ -27,23 +27,25 @@ namespace Program
 
         public void Deposit()
         {
-            double amountDeposit;
             BankSimulator.ClearTerminal();
             Console.Write("Enter deposit amount: $");
-            amountDeposit = Convert.ToDouble(Console.ReadLine());
+            if(double.TryParse(Console.ReadLine(), out double amountDeposit) && amountDeposit > 0)
+            {   
             this.Balance += amountDeposit;
             Console.WriteLine($"Successfully deposited ${amountDeposit}. Your new balance is ${this.Balance}");
-
+            }
+            else
+            {
+                Console.WriteLine("Invalid deposit amount");
+            };
             BankSimulator.PressF();
         }
 
         public void Withdraw()
         {
             BankSimulator.ClearTerminal();
-            double amountWithdraw;
             Console.Write("Enter your withdrawal: $");
-            amountWithdraw = Convert.ToDouble(Console.ReadLine());
-            if (amountWithdraw <= this.Balance)
+            if (double.TryParse(Console.ReadLine(), out double amountWithdraw) && amountWithdraw <= this.Balance)
             {
                 BankSimulator.ClearTerminal();
                 this.Balance -= amountWithdraw;
@@ -122,14 +124,13 @@ namespace Program
                 "4. Exit",
                 "5. Transfer Money"
             ];
-            int convertedNumber;
             Console.WriteLine("Welcome to our system!");
             foreach (string buttonOption in mainPage)
             {
                 Console.WriteLine(buttonOption);
             }
-            string? userChoise = Console.ReadLine();
-            if (int.TryParse(userChoise, out  convertedNumber)){
+            // string? userChoise = Console.ReadLine();
+            if (int.TryParse(Console.ReadLine(), out int userChoise)){
                 switch (userChoise)
             {
                 case "1":
@@ -198,14 +199,9 @@ namespace Program
         
         static void Main(string[] args)
         {
-            bool isSystemOn = true;
             BankAccount[] accounts = { new BankAccount("Panfil", 100), new BankAccount("Sarah", 300) };
             Console.WriteLine("Welcome to our system.");
-            bool isIdentified = IdentificationAge();
-            if (!isIdentified)
-            {
-                return;
-            }
+            bool isSystemOn = IdentificationAge();
 
             while (isSystemOn)
             {
