@@ -7,14 +7,16 @@ namespace Program
     {
         public string OwnerName{ get; set; }
         public double Balance{ get; private set; }
+        public string Pin{ get; private set; }
         // readonly int AccountNumber;
         readonly DateTime CreatedAt;
         // static double InterestRate;
 
-        public BankAccount(string OwnerName, double Balance)
+        public BankAccount(string OwnerName, double Balance, string Pin)
         {
             this.OwnerName = OwnerName;
             this.Balance = Balance;
+            this.Pin = Pin;
             this.CreatedAt = DateTime.Now;
         }
         public void CheckBalance()
@@ -105,6 +107,17 @@ namespace Program
             Console.WriteLine("\nPress Enter to continue");
             Console.ReadLine();
         }
+
+        public static void EnterPass( BankAccount account)
+        {
+            
+            Console.Write("Enter your password: ");
+            string correctPin = Console.ReadLine();
+            if(correctPin != account.Pin)
+            {
+                Environment.Exit(0);
+            };
+        }
         
         public static void ClearTerminal()
         {
@@ -115,7 +128,7 @@ namespace Program
 
         static bool Menu(BankAccount account, BankAccount[] allAccounts)
         {
-            
+        
             string[] mainPage =
             [
                 "1. Check the balance",
@@ -130,21 +143,25 @@ namespace Program
                 Console.WriteLine(buttonOption);
             }
             // string? userChoise = Console.ReadLine();
-            if (int.TryParse(Console.ReadLine(), out int userChoise)){
-                switch (userChoise)
+            if (int.TryParse(Console.ReadLine() ?? "", out int userChoice)){
+                switch (userChoice)
             {
-                case "1":
+                case 1:
+                    BankSimulator.EnterPass(account);
                     account.CheckBalance();
                     break;
-                case "2":
+                case 2:
+                    BankSimulator.EnterPass(account);
                     account.Deposit();
                     break;
-                case "3":
+                case 3:
+                    BankSimulator.EnterPass(account);
                     account.Withdraw();
                     break;
-                case "4":
+                case 4:
                         return false;
-                case "5":
+                case 5:
+                BankSimulator.EnterPass(account);
                 Console.WriteLine("Choose an account to transfer to: ");
                 for (int i = 0; i < allAccounts.Length; i++)
                         {
@@ -199,7 +216,7 @@ namespace Program
         
         static void Main(string[] args)
         {
-            BankAccount[] accounts = { new BankAccount("Panfil", 100), new BankAccount("Sarah", 300) };
+            BankAccount[] accounts = { new BankAccount("Panfil", 100, "0001"), new BankAccount("Sarah", 300, "0002") };
             Console.WriteLine("Welcome to our system.");
             bool isSystemOn = IdentificationAge();
 
@@ -229,6 +246,14 @@ namespace Program
                     bool isSessionActive = true;
                     while (isSessionActive)
                     {
+                        ClearTerminal();
+                        EnterPass(accounts[accountSelected - 1]);
+                        // Console.Write("Enter your password: ");
+                        // string correctPin = Console.ReadLine();
+                        // if(correctPin != accounts[accountSelected - 1].Pin)
+                        // {
+                        //     return;
+                        // }
                         ClearTerminal();
                     isSessionActive = Menu(accounts[accountSelected - 1], accounts);    
                     }
