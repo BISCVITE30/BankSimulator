@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.Metrics;
 using System.Security.Cryptography.X509Certificates;
 namespace Program
 {
@@ -33,8 +34,8 @@ namespace Program
             Console.Write("Enter deposit amount: $");
             if(double.TryParse(Console.ReadLine(), out double amountDeposit) && amountDeposit > 0)
             {   
-            this.Balance += amountDeposit;
-            Console.WriteLine($"Successfully deposited ${amountDeposit}. Your new balance is ${this.Balance}");
+                this.Balance += amountDeposit;
+                Console.WriteLine($"Successfully deposited ${amountDeposit}. Your new balance is ${this.Balance}");
             }
             else
             {
@@ -58,12 +59,7 @@ namespace Program
             else
             {
                 Console.WriteLine("Insufficient funds.");
-                Console.Write("You want return back? (Yes/No) ");
-                string? turnBack = Console.ReadLine();
-                if (turnBack == "Yes")
-                {
-                    BankSimulator.ClearTerminal();
-                }
+                BankSimulator.PressF();
             }
         }
 
@@ -74,7 +70,6 @@ namespace Program
 
             if(double.TryParse(Console.ReadLine(), out double amountTransfer) && amountTransfer > 0)
             {
-                
                 if(amountTransfer <= this.Balance)
                 {
                     this.Balance -= amountTransfer;
@@ -108,15 +103,27 @@ namespace Program
             Console.ReadLine();
         }
 
-        public static void EnterPass( BankAccount account)
+        public static void EnterPass( BankAccount account )
         {
-            
-            Console.Write("Enter your password: ");
-            string correctPin = Console.ReadLine();
-            if(correctPin != account.Pin)
+            int attempts = 0;
+            while ( attempts < 3)
             {
-                Environment.Exit(0);
-            };
+            Console.Write("Enter your password: ");
+            string? correctPin = Console.ReadLine();
+                
+            if(correctPin == account.Pin)
+            {
+                return;
+            }
+            
+            attempts++;
+            ClearTerminal();
+            Console.WriteLine($"Incorrect password. Attempts remaining: {3 - attempts}");
+            }
+
+            Console.WriteLine("\nToo many failed attempts. Security lock engaged.");
+            PressF();
+            Environment.Exit(0);
         }
         
         public static void ClearTerminal()
@@ -128,59 +135,53 @@ namespace Program
 
         static bool Menu(BankAccount account, BankAccount[] allAccounts)
         {
-        
             string[] mainPage =
             [
                 "1. Check the balance",
                 "2. Make a deposit",
                 "3. Withdraw",
-                "4. Exit",
-                "5. Transfer Money"
+                "4. Transfer Money",
+                "5. Exit"
             ];
             Console.WriteLine("Welcome to our system!");
             foreach (string buttonOption in mainPage)
             {
                 Console.WriteLine(buttonOption);
             }
-            // string? userChoise = Console.ReadLine();
-            if (int.TryParse(Console.ReadLine() ?? "", out int userChoice)){
+            if (int.TryParse(Console.ReadLine() ?? "", out int userChoice))
+            {
                 switch (userChoice)
             {
                 case 1:
-                    BankSimulator.EnterPass(account);
                     account.CheckBalance();
                     break;
                 case 2:
-                    BankSimulator.EnterPass(account);
                     account.Deposit();
                     break;
                 case 3:
-                    BankSimulator.EnterPass(account);
                     account.Withdraw();
                     break;
                 case 4:
-                        return false;
+                    Console.WriteLine("Choose an account to transfer to: ");
+                    for (int i = 0; i < allAccounts.Length; i++)
+                    {
+                        if(allAccounts[i] != account)
+                        {
+                            Console.WriteLine($"{i + 1} {allAccounts[i].OwnerName}");
+                        }
+                    }
+                    Console.Write("Choise: ");
+                    if(int.TryParse(Console.ReadLine(), out int targetIndex) && targetIndex > 0 && targetIndex <= allAccounts.Length && allAccounts[targetIndex - 1] != account)
+                    {
+                        account.Transfer(allAccounts[targetIndex - 1]);
+                    } 
+                    else
+                    {
+                        Console.WriteLine("Invalid selection");
+                    }
+                    break;
                 case 5:
-                BankSimulator.EnterPass(account);
-                Console.WriteLine("Choose an account to transfer to: ");
-                for (int i = 0; i < allAccounts.Length; i++)
-                        {
-                            if(allAccounts[i] != account)
-                            {
-                                Console.WriteLine($"{i + 1} {allAccounts[i].OwnerName}");
-                            }
-                        }
-
-                Console.Write("Choise: ");
-
-                if(int.TryParse(Console.ReadLine(), out int targetIndex) && targetIndex > 0 && targetIndex <= allAccounts.Length && allAccounts[targetIndex - 1] != account)
-                        {
-                            account.Transfer(allAccounts[targetIndex - 1]);
-                        } else
-                        {
-                            Console.WriteLine("Invalid selection");
-                        }
-                        break;
+                    return false;
             }
             }
             return true;
@@ -244,18 +245,12 @@ namespace Program
                         break;
                     }
                     bool isSessionActive = true;
+                    ClearTerminal();
+                    EnterPass(accounts[accountSelected - 1]);
                     while (isSessionActive)
                     {
                         ClearTerminal();
-                        EnterPass(accounts[accountSelected - 1]);
-                        // Console.Write("Enter your password: ");
-                        // string correctPin = Console.ReadLine();
-                        // if(correctPin != accounts[accountSelected - 1].Pin)
-                        // {
-                        //     return;
-                        // }
-                        ClearTerminal();
-                    isSessionActive = Menu(accounts[accountSelected - 1], accounts);    
+                        isSessionActive = Menu(accounts[accountSelected - 1], accounts);    
                     }
                 } 
                 else
